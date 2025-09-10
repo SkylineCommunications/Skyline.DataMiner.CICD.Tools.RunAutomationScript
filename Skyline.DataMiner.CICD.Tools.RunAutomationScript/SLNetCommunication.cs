@@ -19,7 +19,9 @@
 
 			try
 			{
-				Connection = new GRPCConnection(hostname);
+				ConnectionAttributes connectionAttributes = ConnectionAttributes.NoProtoBufSerialization;
+
+				Connection = new GRPCConnection(hostname, connectionAttributes);
 			}
 			catch (Exception ex)
 			{
