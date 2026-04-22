@@ -1,12 +1,5 @@
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
-
-using Skyline.DataMiner.CICD.Tools.RunAutomationScript.SystemCommandLine;
-using Skyline.DataMiner.Net;
-using Skyline.DataMiner.Net.Correlation;
 using Skyline.DataMiner.Net.Messages;
-using Skyline.DataMiner.Net.Messages.SLDataGateway;
-using Skyline.DataMiner.Net.ReportsAndDashboards;
 
 namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 {
@@ -15,7 +8,7 @@ namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 		public Local() :
 			base(name: "Local", description: "Executes an automationscript on the local agent without input parameters or dummies.")
 		{
-			AddOption(new System.CommandLine.Option<string?>(
+			AddOption(new Option<string?>(
 				aliases: ["--script-name", "-sn"],
 				description: "The automation script name.")
 			{
@@ -23,7 +16,7 @@ namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 			}
 			);
 
-			var checkSetsOption = new System.CommandLine.Option<bool>(
+			var checkSetsOption = new Option<bool>(
 				aliases: ["--check-sets", "-cs"],
 				description: "Indicates whether gets after sets will be performed. Default value is true.")
 			{
@@ -33,7 +26,7 @@ namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 			checkSetsOption.SetDefaultValue(true);
 			AddOption(checkSetsOption);
 
-			var extendedErrorOption = new System.CommandLine.Option<bool>(
+			var extendedErrorOption = new Option<bool>(
 				aliases: ["--extended-error-info", "-eri"],
 				description: "Indicates whether extended error info is desired or not. Default value is true.")
 			{
@@ -43,7 +36,7 @@ namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 			extendedErrorOption.SetDefaultValue(true);
 			AddOption(extendedErrorOption);
 
-			var isSynchronousOption = new System.CommandLine.Option<bool>(
+			var isSynchronousOption = new Option<bool>(
 				aliases: ["--is-synchronous", "-is"],
 				description: "Indicates whether this call should wait until the script finishes or return immediately. Default value is true.")
 			{
@@ -53,24 +46,24 @@ namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 			isSynchronousOption.SetDefaultValue(true);
 			AddOption(isSynchronousOption);
 
-			var dataMinerUserNameOption = new System.CommandLine.Option<string?>(
+			var dataMinerUserNameOption = new Option<string?>(
 				aliases: ["--username", "-user"],
 				description: "Username for a DataMiner user with permissions to execute automation scripts. This is optional, the username can also be provided using the 'DATAMINER_DEPLOY_USER' environment variable (unix/win) or using 'DATAMINER_DEPLOY_USER_ENCRYPTED' configured with Skyline.DataMiner.CICD.Tools.WinEncryptedKeys (windows).")
 			{
 				IsRequired = false,
 			};
 
-			dataMinerUserNameOption.SetDefaultValue(String.Empty);
+			dataMinerUserNameOption.SetDefaultValue(string.Empty);
 			AddOption(dataMinerUserNameOption);
 
-			var dataMinerPasswordOption = new System.CommandLine.Option<string?>(
+			var dataMinerPasswordOption = new Option<string?>(
 				aliases: ["--password", "-pass"],
 				description: "Password for a DataMiner user with permissions to execute automation scripts. This is optional, the password can also be provided using the 'DATAMINER_DEPLOY_PASSWORD' environment variable (unix/win) or using 'DATAMINER_DEPLOY_PASSWORD_ENCRYPTED' configured with Skyline.DataMiner.CICD.Tools.WinEncryptedKeys (windows).")
 			{
 				IsRequired = false,
 			};
 
-			dataMinerPasswordOption.SetDefaultValue(String.Empty);
+			dataMinerPasswordOption.SetDefaultValue(string.Empty);
 			AddOption(dataMinerPasswordOption);
 		}
 	}
@@ -257,7 +250,7 @@ namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 			}
 			else
 			{
-				return String.Empty;
+				return string.Empty;
 			}
 		}
 
@@ -265,12 +258,12 @@ namespace Skyline.DataMiner.CICD.Tools.RunAutomationScript.Commands
 		{
 			string? userFromEnvironment = Environment.GetEnvironmentVariable(key);
 
-			if (String.IsNullOrWhiteSpace(userFromEnvironment))
+			if (string.IsNullOrWhiteSpace(userFromEnvironment))
 			{
 				return null;
 			}
 
-			if (!String.IsNullOrWhiteSpace(userFromEnv))
+			if (!string.IsNullOrWhiteSpace(userFromEnv))
 			{
 				logger.LogDebug("OK: Overriding previously encrypted key with found token in Env Variable: 'DATAMINER_DEPLOY_USER'.");
 			}
