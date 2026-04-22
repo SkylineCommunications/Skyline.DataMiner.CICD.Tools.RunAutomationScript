@@ -57,13 +57,13 @@
 		public DMSMessage[] SendMessage(DMSMessage message)
 		{
 
-			var result = Connection.SendAsyncOverConnection(new[] { message }, 3600000);
+			var result = Connection.SendAsyncOverConnection(new[] { message }, 3600);
 			return result;
 		}
 
 		public DMSMessage? SendSingleResponseMessage(DMSMessage message)
 		{
-			var result = Connection.SendAsyncOverConnection(new[] { message }, 3600000);
+			var result = Connection.SendAsyncOverConnection(new[] { message }, 3600);
 			return result.FirstOrDefault();
 		}
 	}
