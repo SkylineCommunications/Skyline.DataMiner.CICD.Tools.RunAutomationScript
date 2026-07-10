@@ -34,8 +34,16 @@
 			Connection.AuthenticateMessageTimeout = 120000;
 			Connection.Authenticate(username, password);
 
-			// Required to allow async slnet calls that we need for installing.
-			Connection.Subscribe(new SubscriptionFilter());
+			// NOTE: Do NOT open a subscription here. Executing an automation script only needs a
+			// plain request/response connection (a single synchronous ExecuteScriptMessage).
+			// Calling Connection.Subscribe(...) upgrades this to a stateful, server-tracked
+			// subscribed session that DataMiner keeps registered until a heartbeat/connection-check
+			// timeout (see the 120000 ms timeouts above) even after the client channel is disposed.
+			// When the tool is invoked rapidly in a loop (e.g. a stability test running the same
+			// script dozens of times), those lingering server-side sessions accumulate and hit the
+			// per-user SLNet connection cap (default 40), making the ~41st invocation fail with
+			// "maximum number of connections". A subscription-free connection is reaped promptly, so
+			// it does not accumulate.
 
 			EndPoint = hostname;
 		}
@@ -51,6 +59,20 @@
 
 		public void Dispose()
 		{
+			// Defensively release any server-side subscription state before tearing down the
+			// connection. Disposing the connection only drops the local gRPC channel; it does not
+			// send a graceful logout, so the server would otherwise retain any subscription until a
+			// heartbeat timeout. ClearSubscriptions() is a no-op when nothing is subscribed, so this
+			// is safe even though we no longer call Subscribe(...) above.
+			try
+			{
+				Connection.ClearSubscriptions();
+			}
+			catch (Exception)
+			{
+				// Best effort: the connection may already be gone. Never let cleanup throw on dispose.
+			}
+
 			Connection.Dispose();
 		}
 
